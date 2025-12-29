@@ -1,19 +1,19 @@
-/* ---------------- MAP ---------------- */
+/* <---------------- MAP ----------------> */
 const map = L.map("map").setView([22.5, 78.9], 5);
 
-/* ---------------- PANES ---------------- */
+/* <---------------- PANES ----------------> */
 map.createPane("areasPane");
 map.getPane("areasPane").style.zIndex = 400;
 
 map.createPane("citiesPane");
 map.getPane("citiesPane").style.zIndex = 650;
 
-/* ---------------- TILE ---------------- */
+/* <---------------- TILE ----------------> */
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: "© OpenStreetMap contributors"
 }).addTo(map);
 
-/* ---------------- LEGEND ---------------- */
+/* <---------------- LEGEND ----------------> */
 const legend = L.control({ position: "bottomright" });
 
 legend.onAdd = function () {
@@ -30,12 +30,12 @@ legend.onAdd = function () {
 
 legend.addTo(map);
 
-/* ---------------- LAYERS ---------------- */
+/* <---------------- LAYERS ----------------> */
 let pointLayer = L.layerGroup([], { pane: "citiesPane" }).addTo(map);
 let stateLayer = null;
 let utLayer = null;
 
-/* ---------------- HELPERS ---------------- */
+/* <---------------- HELPERS ----------------> */
 function riskColor(cat) {
   if (cat === "Very High Risk") return "#dc2626";
   if (cat === "High Risk") return "#f97316";
@@ -65,7 +65,7 @@ function titleCase(str) {
   return str.replace(/\b\w/g, c => c.toUpperCase());
 }
 
-/* ---------------- SIDEBAR ---------------- */
+/* <---------------- SIDEBAR ----------------> */
 function openPanel(title, html) {
   document.querySelector("#info-title .title-text").innerText = title;
   document.getElementById("info-content").innerHTML = html;
@@ -77,7 +77,7 @@ function closePanel() {
   document.getElementById("info-panel").classList.add("hidden");
 }
 
-/* ---------------- CLEAR ---------------- */
+/* <---------------- CLEAR ----------------> */
 function clearLayers() {
   pointLayer.clearLayers();
 
@@ -92,7 +92,7 @@ function clearLayers() {
   }
 }
 
-/* ---------------- CITY MARKERS ---------------- */
+/* <---------------- CITY MARKERS ----------------> */
 function loadCities() {
   if (stateLayer) map.removeLayer(stateLayer);
   if (utLayer) map.removeLayer(utLayer);
@@ -126,9 +126,11 @@ function loadCities() {
           openPanel(
             titleCase(d["State/UT/City"]),
             `
-              <p><b>Risk:</b> ${d.risk_category}</p>
               <p><b>Accidents:</b> ${d["Total Traffic Accidents - Cases"]}</p>
-              <p><b>Risk Score:</b> ${(d.risk_score * 100).toFixed(2)} %</p>
+              <p><b>Injured:</b> ${d["Total Traffic Accidents - Injured"]}</p>
+              <p><b>Deaths:</b> ${d["Total Traffic Accidents - Died"]}</p>
+              <p><b>Risk:</b> ${d.risk_category}</p>
+              <p><b>Risk Score:</b> ${(d.risk_score).toFixed(2)}</p>
             `
           );
         });
@@ -137,7 +139,7 @@ function loadCities() {
     });
 }
 
-/* ---------------- AREA LOADER ---------------- */
+/* <---------------- AREA LOADER ----------------> */
 function loadAreas(type) {
   Promise.all([
     fetch(`/api/locations?type=${type}`).then(r => r.json()),
@@ -169,10 +171,11 @@ function loadAreas(type) {
           openPanel(
             titleCase(f.properties.NAME_1),
             `
-              <p><b>Risk:</b> ${d.risk_category}</p>
               <p><b>Accidents:</b> ${d["Total Traffic Accidents - Cases"]}</p>
-              <p><b>Risk Score:</b> ${(d.risk_score * 100).toFixed(2)} %</p>
-
+              <p><b>Injured:</b> ${d["Total Traffic Accidents - Injured"]}</p>
+              <p><b>Deaths:</b> ${d["Total Traffic Accidents - Died"]}</p>
+              <p><b>Risk:</b> ${d.risk_category}</p>
+              <p><b>Risk Score:</b> ${(d.risk_score).toFixed(2)}</p>
             `
           );
         });
@@ -185,7 +188,7 @@ function loadAreas(type) {
   });
 }
 
-/* ---------------- BUTTON ACTIONS ---------------- */
+/* <---------------- BUTTON ACTIONS ----------------> */
 function loadStates() {
   clearLayers();
   loadAreas("State");
@@ -205,7 +208,7 @@ function loadAll() {
 
 
 
-/* ---------------- DEFAULT ---------------- */
+/* <---------------- DEFAULT ----------------> */
 loadAll();
 
 setTimeout(() => {
