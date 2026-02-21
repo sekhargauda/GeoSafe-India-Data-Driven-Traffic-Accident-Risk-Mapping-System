@@ -162,9 +162,12 @@ function loadAreas(type) {
 
     const layer = L.geoJSON(geo, {
       pane: "areasPane",
-      filter: f => mapData[normalizeName(f.properties.NAME_1)],
+
+      // 🔥 CHANGED HERE → st_nm instead of NAME_1
+      filter: f => mapData[normalizeName(f.properties.st_nm)],
+
       style: f => {
-        const d = mapData[normalizeName(f.properties.NAME_1)];
+        const d = mapData[normalizeName(f.properties.st_nm)];
         return {
           fillColor: riskColor(d.risk_category),
           color: "#333",
@@ -172,13 +175,13 @@ function loadAreas(type) {
           fillOpacity: 0.7
         };
       },
-      onEachFeature: (f, l) => {
-        const d = mapData[normalizeName(f.properties.NAME_1)];
 
-        // STATE / UT → SIDEBAR
+      onEachFeature: (f, l) => {
+        const d = mapData[normalizeName(f.properties.st_nm)];
+
         l.on("click", () => {
           openPanel(
-            titleCase(f.properties.NAME_1),
+            titleCase(f.properties.st_nm),
             `
               <p><b>Accidents:</b> ${d["Total Traffic Accidents - Cases"]}</p>
               <p><b>Injured:</b> ${d["Total Traffic Accidents - Injured"]}</p>
